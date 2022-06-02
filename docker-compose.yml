@@ -1,0 +1,35 @@
+# Copyright: (c) 2022, Justin Béra (@just1not2) <me@just1not2.org>
+# Mozilla Public License Version 2.0 (see LICENSE or https://www.mozilla.org/en-US/MPL/2.0/)
+
+version: "3"
+
+volumes:
+  database_data:
+
+services:
+  mongo:
+    image: mongo:5.0.6
+    container_name: mongo
+    hostname: mongo
+    restart: always
+    volumes:
+      - database_data:/data/db
+      - ./db-init:/docker-entrypoint-initdb.d
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: electorz
+      MONGO_INITDB_ROOT_USERNAME: electorz
+      MONGO_INITDB_ROOT_PASSWORD: electorz
+
+  mongo-express:
+    image: mongo-express:1.0.0-alpha.4
+    container_name: mongo-express
+    hostname: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://electorz:electorz@mongo:27017/
+    depends_on:
+      - mongo
